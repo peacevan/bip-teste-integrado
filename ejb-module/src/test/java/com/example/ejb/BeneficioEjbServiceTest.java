@@ -235,4 +235,50 @@ class BeneficioEjbServiceTest {
         assertThrows(OptimisticLockException.class, 
             () -> service.transfer(1L, 2L, amount));
     }
+
+    @Test
+    @DisplayName("GREEN: Transfer com saldo zero deve lançar exceção")
+    void transfer_WithZeroBalance_ShouldThrowException() {
+        // Arrange
+        Beneficio beneficioSemSaldo = new Beneficio("Sem Saldo", "Saldo zerado", BigDecimal.ZERO);
+        beneficioSemSaldo.setId(3L);
+        
+        BigDecimal amount = new BigDecimal("50.00");
+        when(entityManager.find(Beneficio.class, 3L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioSemSaldo);
+        when(entityManager.find(Beneficio.class, 2L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioDestino);
+
+        // Act & Assert
+        InsufficientBalanceException exception = assertThrows(
+            InsufficientBalanceException.class,
+            () -> service.transfer(3L, 2L, amount)
+        );
+
+        assertEquals(3L, exception.getBeneficioId());
+        assertEquals(BigDecimal.ZERO, exception.getSaldoAtual());
+        assertEquals(amount, exception.getValorTentativa());
+        
+        // Saldo deve permanecer zero
+        assertEquals(BigDecimal.ZERO, beneficioSemSaldo.getValor());
+    }
+
+    @Test
+    @DisplayName("GREEN: Transfer com saldo exato deve funcionar")
+    void transfer_WithExactBalance_ShouldSucceed() {
+        // Arrange
+        Beneficio beneficioExato = new Beneficio("Exato", "Saldo exato", new BigDecimal("100.00"));
+        beneficioExato.setId(4L);
+        
+        BigDecimal amount = new BigDecimal("100.00"); // Valor exato do saldo
+        when(entityManager.find(Beneficio.class, 4L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioExato);
+        when(entityManager.find(Beneficio.class, 2L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioDestino);
+
+        // Act
+        assertDoesNotThrow(() -> service.transfer(4L, 2L, amount));
+
+        // Assert
+        assertEquals(0, beneficioExato.getValor().compareTo(BigDecimal.ZERO)); // Deve ficar com zero
+        assertEquals(new BigDecimal("600.00"), beneficioDestino.getValor()); // 500 + 100
+        verify(entityManager).merge(beneficioExato);
+        verify(entityManager).merge(beneficioDestino);
+    }
 }

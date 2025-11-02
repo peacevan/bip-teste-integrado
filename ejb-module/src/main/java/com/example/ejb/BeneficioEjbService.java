@@ -85,6 +85,7 @@ public class BeneficioEjbService {
     
     /**
      * Valida se há saldo suficiente para a transferência
+     * Saldo deve ser maior ou igual ao valor a ser transferido
      */
     private void validateSufficientBalance(Beneficio from, BigDecimal amount) {
         if (from.getValor().compareTo(amount) < 0) {
