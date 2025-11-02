@@ -1,0 +1,5 @@
+com\example\ejb\BeneficioEjbService.class
+com\example\ejb\exception\InsufficientBalanceException.class
+com\example\ejb\SimpleEjbRunner.class
+com\example\ejb\Beneficio.class
+com\example\ejb\EjbTestRunner.class

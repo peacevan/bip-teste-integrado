@@ -1,4 +1,4 @@
-package com.example.backend.controller;
+package com.example.backend;
 
 import com.example.backend.dto.BeneficioRequest;
 import com.example.backend.dto.BeneficioResponse;
@@ -80,9 +80,6 @@ public class BeneficioController {
         try {
             beneficioService.transfer(request);
             return ResponseEntity.ok("Transferência realizada com sucesso");
-        } catch (UnsupportedOperationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-                    .body("EJB integration not configured yet");
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body("Erro na transferência: " + e.getMessage());

@@ -1,0 +1,12 @@
+com\example\backend\config\SwaggerConfig.class
+com\example\backend\repository\BeneficioRepository.class
+com\example\backend\service\BeneficioService.class
+com\example\backend\service\SpringBootEjbAdapter.class
+com\example\backend\BackendApplication.class
+com\example\backend\BeneficioController.class
+com\example\backend\dto\TransferRequest.class
+com\example\backend\exception\GlobalExceptionHandler.class
+com\example\backend\dto\BeneficioResponse.class
+com\example\backend\dto\BeneficioRequest.class
+com\example\backend\entity\BeneficioEntity.class
+com\example\backend\config\EjbIntegrationConfig.class

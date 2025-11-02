@@ -5,7 +5,6 @@ import com.example.backend.dto.BeneficioResponse;
 import com.example.backend.dto.TransferRequest;
 import com.example.backend.entity.BeneficioEntity;
 import com.example.backend.repository.BeneficioRepository;
-import com.example.ejb.BeneficioEjbService;
 import com.example.ejb.exception.InsufficientBalanceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +26,8 @@ public class BeneficioService {
     @Autowired
     private BeneficioRepository repository;
     
-    // TODO: Configurar injeção do EJB (JNDI ou CDI)
-    // @Autowired
-    // private BeneficioEjbService ejbService;
+    @Autowired
+    private SpringBootEjbAdapter ejbAdapter;
     
     /**
      * Lista todos os benefícios
@@ -126,19 +124,18 @@ public class BeneficioService {
     }
     
     /**
-     * Transfere valores entre benefícios usando EJB
-     * TODO: Implementar integração com EJB quando disponível
+     * Transfere valores entre benefícios usando lógica do EJB adaptada para Spring Boot
      */
     public void transfer(TransferRequest request) {
-        // Simulação - será substituída pela integração com EJB
-        throw new UnsupportedOperationException("EJB integration not configured yet");
-        
-        // Implementação futura:
-        // try {
-        //     ejbService.transfer(request.getFromId(), request.getToId(), request.getAmount());
-        // } catch (InsufficientBalanceException e) {
-        //     throw new RuntimeException("Saldo insuficiente: " + e.getMessage(), e);
-        // }
+        try {
+            ejbAdapter.transfer(request.getFromId(), request.getToId(), request.getAmount());
+        } catch (InsufficientBalanceException e) {
+            throw new RuntimeException("Saldo insuficiente: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Parâmetros inválidos: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na transferência: " + e.getMessage(), e);
+        }
     }
     
     /**
