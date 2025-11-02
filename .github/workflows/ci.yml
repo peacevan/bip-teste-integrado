@@ -12,5 +12,18 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build backend
+      
+      # Build and test EJB module first (dependency)
+      - name: Build and test EJB module
+        run: mvn -B -f ejb-module clean install
+      
+      # Build and test Spring Boot backend module
+      - name: Build and test backend module
         run: mvn -B -f backend-module clean package
+      
+      # Optional: Run integration tests if they exist
+      - name: Run integration tests
+        run: |
+          if [ -f "integration-tests/pom.xml" ]; then
+            mvn -B -f integration-tests clean test
+          fi
