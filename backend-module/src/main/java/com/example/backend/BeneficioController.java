@@ -24,9 +24,11 @@ public class BeneficioController {
     private BeneficioService beneficioService;
 
     @GetMapping
-    public ResponseEntity<List<BeneficioResponse>> listAll() {
+      public ResponseEntity<List<BeneficioResponse>> listAll() {
         List<BeneficioResponse> beneficios = beneficioService.findAll();
-        return ResponseEntity.ok(beneficios);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(beneficios);
     }
 
     @GetMapping("/active")
