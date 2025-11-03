@@ -50,15 +50,15 @@ class BeneficioEjbServiceTest {
     @Test
     @DisplayName("GREEN: Transfer com saldo suficiente deve funcionar")
     void transfer_WithSufficientBalance_ShouldSucceed() {
-        // Arrange
+    
         BigDecimal amount = new BigDecimal("300.00");
         when(entityManager.find(Beneficio.class, 1L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioOrigem);
         when(entityManager.find(Beneficio.class, 2L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioDestino);
 
-        // Act
+      
         assertDoesNotThrow(() -> service.transfer(1L, 2L, amount));
 
-        // Assert
+     
         assertEquals(new BigDecimal("700.00"), beneficioOrigem.getValor());
         assertEquals(new BigDecimal("800.00"), beneficioDestino.getValor());
         verify(entityManager).merge(beneficioOrigem);
@@ -68,12 +68,12 @@ class BeneficioEjbServiceTest {
     @Test
     @DisplayName("GREEN: Transfer com saldo insuficiente deve lançar exceção")
     void transfer_WithInsufficientBalance_ShouldThrowException() {
-        // Arrange
+     
         BigDecimal amount = new BigDecimal("1500.00"); // Maior que o saldo de 1000
         when(entityManager.find(Beneficio.class, 1L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioOrigem);
         when(entityManager.find(Beneficio.class, 2L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioDestino);
 
-        // Act & Assert
+      
         InsufficientBalanceException exception = assertThrows(
             InsufficientBalanceException.class,
             () -> service.transfer(1L, 2L, amount)
@@ -83,7 +83,7 @@ class BeneficioEjbServiceTest {
         assertEquals(new BigDecimal("1000.00"), exception.getSaldoAtual());
         assertEquals(amount, exception.getValorTentativa());
         
-        // Valores não devem ter mudado
+   
         assertEquals(new BigDecimal("1000.00"), beneficioOrigem.getValor());
         assertEquals(new BigDecimal("500.00"), beneficioDestino.getValor());
     }
@@ -91,11 +91,9 @@ class BeneficioEjbServiceTest {
     @Test
     @DisplayName("GREEN: Transfer com valor zero deve lançar exceção")
     void transfer_WithZeroAmount_ShouldThrowException() {
-        // Arrange
+      
         BigDecimal amount = BigDecimal.ZERO;
-        // Não precisa mock pois validação acontece antes da busca
-
-        // Act & Assert
+    
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
             () -> service.transfer(1L, 2L, amount)
@@ -107,11 +105,9 @@ class BeneficioEjbServiceTest {
     @Test
     @DisplayName("GREEN: Transfer com valor negativo deve lançar exceção")
     void transfer_WithNegativeAmount_ShouldThrowException() {
-        // Arrange
+        
         BigDecimal amount = new BigDecimal("-100.00");
-        // Não precisa mock pois validação acontece antes da busca
-
-        // Act & Assert
+     
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
             () -> service.transfer(1L, 2L, amount)
@@ -123,11 +119,9 @@ class BeneficioEjbServiceTest {
     @Test
     @DisplayName("GREEN: Transfer para o mesmo benefício deve lançar exceção")
     void transfer_ToSameBeneficio_ShouldThrowException() {
-        // Arrange
+      
         BigDecimal amount = new BigDecimal("100.00");
-        // Não precisa mock pois validação acontece antes da busca
 
-        // Act & Assert
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
             () -> service.transfer(1L, 1L, amount)
@@ -214,7 +208,6 @@ class BeneficioEjbServiceTest {
         assertEquals(new BigDecimal("2000.00"), totalFinal, 
             "Total deve ser preservado mesmo com operações concorrentes");
         
-        // Pelo menos uma das operações deve ter falhado devido ao controle de concorrência
         assertTrue(beneficioA.getValor().compareTo(BigDecimal.ZERO) >= 0, 
             "Saldo não pode ficar negativo");
     }
@@ -222,17 +215,14 @@ class BeneficioEjbServiceTest {
     @Test
     @DisplayName("GREEN: Transfer deve usar locking otimista")
     void transfer_ShouldUseOptimisticLocking() {
-        // Arrange
         BigDecimal amount = new BigDecimal("100.00");
         when(entityManager.find(Beneficio.class, 1L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioOrigem);
         when(entityManager.find(Beneficio.class, 2L, LockModeType.PESSIMISTIC_WRITE)).thenReturn(beneficioDestino);
         
-        // Simular conflito de versão
         when(entityManager.merge(any(Beneficio.class)))
             .thenThrow(new OptimisticLockException("Versão conflitante"));
 
-        // Act & Assert
-        assertThrows(OptimisticLockException.class, 
+         assertThrows(OptimisticLockException.class, 
             () -> service.transfer(1L, 2L, amount));
     }
 

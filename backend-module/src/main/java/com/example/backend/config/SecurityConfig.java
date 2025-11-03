@@ -60,19 +60,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permitir origem do Angular (desenvolvimento)
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:4200", "http://127.0.0.1:4200"));
         
-        // Métodos HTTP permitidos
+       
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         
-        // Headers permitidos
+        
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
-        // Permitir credenciais
+        
         configuration.setAllowCredentials(true);
         
-        // Aplicar configuração para todas as rotas
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         
