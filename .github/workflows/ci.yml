@@ -22,7 +22,7 @@ jobs:
         cache: maven
         
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -47,7 +47,7 @@ jobs:
       run: mvn -B -f backend-module package -DskipTests
       
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results
@@ -56,7 +56,7 @@ jobs:
           **/target/site/jacoco/
           
     - name: Upload JAR artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: jar-artifacts
         path: |
