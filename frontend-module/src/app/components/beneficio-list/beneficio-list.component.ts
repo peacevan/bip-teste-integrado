@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,7 +35,10 @@ export class BeneficioListComponent implements OnInit {
   searchTerm: string = '';
   loading: boolean = false;
 
-  constructor(private beneficioService: BeneficioService) {}
+  constructor(
+    private beneficioService: BeneficioService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadBeneficios();
@@ -70,6 +74,18 @@ export class BeneficioListComponent implements OnInit {
     } else {
       this.loadBeneficios();
     }
+  }
+
+  onCreate(): void {
+    this.router.navigate(['/beneficios/create']);
+  }
+
+  onEdit(id: number): void {
+    this.router.navigate(['/beneficios/edit', id]);
+  }
+
+  onTransfer(id: number): void {
+    this.router.navigate(['/beneficios/transfer', id]);
   }
 
   deleteBeneficio(id: number): void {

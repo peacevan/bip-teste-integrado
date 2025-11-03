@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,11 +31,14 @@ export class TransferFormComponent implements OnInit {
   transferForm: FormGroup;
   beneficios: Beneficio[] = [];
   loading: boolean = false;
+  preSelectedFromId?: number;
 
   constructor(
     private fb: FormBuilder,
     private beneficioService: BeneficioService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.transferForm = this.fb.group({
       fromId: ['', [Validators.required]],
@@ -44,6 +48,12 @@ export class TransferFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Verificar se veio um ID pela rota (quando clica em "Transferir" na lista)
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.preSelectedFromId = +id;
+      this.transferForm.patchValue({ fromId: this.preSelectedFromId });
+    }
     this.loadBeneficios();
   }
 
@@ -77,7 +87,10 @@ export class TransferFormComponent implements OnInit {
           this.snackBar.open(response, 'Fechar', { duration: 5000 });
           this.transferForm.reset();
           this.loading = false;
-          this.loadBeneficios(); // Recarregar para ver valores atualizados
+          // Redirecionar para a lista de benefícios após sucesso
+          setTimeout(() => {
+            this.router.navigate(['/beneficios']);
+          }, 1500);
         },
         error: (error) => {
           console.error('Erro na transferência:', error);
@@ -87,6 +100,10 @@ export class TransferFormComponent implements OnInit {
         }
       });
     }
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/beneficios']);
   }
 
   getBeneficioName(id: number): string {

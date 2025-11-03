@@ -1,1 +1,86 @@
-<p>beneficio-form works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Editar Benefício' : 'Novo Benefício' }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Loading Spinner -->
+    <div *ngIf="loading && isEditMode" class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Carregando...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="beneficioForm" (ngSubmit)="onSubmit()" *ngIf="!loading || !isEditMode">
+      
+      <!-- Nome -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome *</mat-label>
+        <input matInput
+               formControlName="nome"
+               placeholder="Digite o nome do benefício">
+        <mat-error *ngIf="f['nome'].hasError('required') && submitted">
+          Nome é obrigatório
+        </mat-error>
+        <mat-error *ngIf="f['nome'].hasError('minlength') && submitted">
+          Nome deve ter pelo menos 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Descrição -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrição</mat-label>
+        <textarea matInput
+                  formControlName="descricao"
+                  placeholder="Digite a descrição (opcional)"
+                  rows="3"></textarea>
+      </mat-form-field>
+
+      <!-- Valor -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Valor *</mat-label>
+        <input matInput
+               type="number"
+               formControlName="valor"
+               placeholder="0.00"
+               step="0.01"
+               min="0">
+        <span matPrefix>R$&nbsp;</span>
+        <mat-error *ngIf="f['valor'].hasError('required') && submitted">
+          Valor é obrigatório
+        </mat-error>
+        <mat-error *ngIf="f['valor'].hasError('min') && submitted">
+          Valor deve ser maior ou igual a zero
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Ativo -->
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="ativo">
+          Benefício ativo
+        </mat-checkbox>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="loading">
+          {{ isEditMode ? 'Atualizar' : 'Criar' }}
+        </button>
+        <button mat-raised-button
+                type="button"
+                (click)="onCancel()"
+                [disabled]="loading">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
