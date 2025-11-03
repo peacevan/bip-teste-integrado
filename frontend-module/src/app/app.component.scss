@@ -1,0 +1,143 @@
+// Layout principal com sidenav
+.sidenav-container {
+  height: 100vh;
+  display: flex;
+  width: 100%;
+}
+
+.mat-sidenav-content{
+   width: 100%;
+
+}
+
+// Menu lateral esquerdo
+.sidenav {
+  width: 250px;
+  background-color: #fafafa;
+  border-right: 1px solid #e0e0e0;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+}
+
+// Cabeçalho do menu lateral
+.sidenav-header {
+  height: 64px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+// Toolbar principal no topo
+.main-toolbar {
+  height: 64px;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.menu-toggle {
+  margin-right: 16px;
+}
+
+// Área de conteúdo principal
+.main-content {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  background-color: #f5f5f5;
+  overflow-y: auto;
+}
+
+// Estilos dos links de navegação
+.active-link {
+  background-color: rgba(63, 81, 181, 0.12) !important;
+  color: #3f51b5 !important;
+  border-radius: 8px;
+  
+  mat-icon {
+    color: #3f51b5 !important;
+  }
+}
+
+mat-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+}
+
+// Estilos da lista de navegação
+mat-nav-list {
+  padding: 16px 8px;
+}
+
+mat-nav-list a {
+  height: 48px;
+  margin: 4px 0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  text-decoration: none;
+  color: #333;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+mat-nav-list mat-icon {
+  color: #666;
+  margin-right: 16px;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+// Media queries para responsividade
+@media (max-width: 768px) {
+  .sidenav {
+    width: 280px;
+  }
+  
+  .main-content {
+    padding: 16px;
+  }
+  
+  .sidenav-header .title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 599px) {
+  .sidenav {
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 12px;
+  }
+  
+  .menu-toggle {
+    margin-right: 8px;
+  }
+}
