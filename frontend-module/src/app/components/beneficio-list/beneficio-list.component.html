@@ -4,7 +4,7 @@
   </mat-card-header>
 
   <mat-card-content>
-    <!-- Barra de Busca -->
+    <!-- Barra de Busca e Ações -->
     <div class="search-container">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Buscar por nome</mat-label>
@@ -22,6 +22,14 @@
 
       <button mat-raised-button
               color="primary"
+              (click)="onCreate()"
+              [disabled]="loading">
+        <mat-icon>add</mat-icon>
+        Novo Benefício
+      </button>
+
+      <button mat-raised-button
+              color="accent"
               (click)="loadBeneficios()"
               [disabled]="loading">
         <mat-icon>refresh</mat-icon>
@@ -76,8 +84,16 @@
             <button mat-icon-button
                     color="primary"
                     matTooltip="Editar"
+                    (click)="onEdit(beneficio.id!)"
                     [disabled]="loading">
               <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button
+                    color="accent"
+                    matTooltip="Transferir"
+                    (click)="onTransfer(beneficio.id!)"
+                    [disabled]="loading">
+              <mat-icon>swap_horiz</mat-icon>
             </button>
             <button mat-icon-button
                     color="warn"
