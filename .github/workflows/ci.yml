@@ -1,29 +1,64 @@
-name: CI
+name: CI/CD Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-      # Build and test EJB module first (dependency)
-      - name: Build and test EJB module
-        run: mvn -B -f ejb-module clean install
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Build EJB module
+      run: mvn -B -f ejb-module clean compile
       
-      # Build and test Spring Boot backend module
-      - name: Build and test backend module
-        run: mvn -B -f backend-module clean package
+    - name: Test EJB module
+      run: mvn -B -f ejb-module test
       
-      # Optional: Run integration tests if they exist
-      - name: Run integration tests
-        run: |
-          if [ -f "integration-tests/pom.xml" ]; then
-            mvn -B -f integration-tests clean test
-          fi
+    - name: Install EJB module
+      run: mvn -B -f ejb-module install -DskipTests
+      
+    - name: Build Backend module
+      run: mvn -B -f backend-module clean compile
+      
+    - name: Test Backend module
+      run: mvn -B -f backend-module test
+      
+    - name: Package Backend module
+      run: mvn -B -f backend-module package -DskipTests
+      
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: |
+          **/target/surefire-reports/
+          **/target/site/jacoco/
+          
+    - name: Upload JAR artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jar-artifacts
+        path: |
+          ejb-module/target/*.jar
+          backend-module/target/*.jar
